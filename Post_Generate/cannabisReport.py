@@ -456,28 +456,7 @@ def generateDexluxeReport(jobNum, outputPath, clientInfo, samples, sampleNames, 
             insertNextSectionComment(ws, pageLocation);
             currentPage +=1; 
             pageLocation = ((currentPage-1) * pageSize) - (8 * (currentPage-2)) + 1;  
-        
-    ''' 
-
-
-
-    
-    currentSection += 1;  
-        
-    if(i+1 == totalSections): 
-        if(i % 2 == 0):
-            pageLocation+=1; 
-            insertNextSectionComment(ws, pageLocation)    
-            currentPage+=1; 
-            pageLocation = ((currentPage-1) * pageSize) - (8 * (currentPage-2)) + 1;  
-                
-    else: 
-        if(i % 2 == 0): 
-            pageLocation+=1; 
-            insertNextSectionComment(ws, pageLocation)    
-            currentPage+=1; 
-            pageLocation = ((currentPage-1) * pageSize) - (8 * (currentPage-2)) + 1;  
-    '''
+     
     
     
     wb.save(outputPath); 
@@ -520,8 +499,8 @@ def insertExtraRowValues(ws, jobNum, pageLocation, sectionJobs, currentSection, 
                 rowName.alignment = Alignment(horizontal='left', indent=1) 
                 rowName.font = Font(name="Times New Roman", size=9, bold=True) 
 
-                if(str(jobNum) in unitTypeMass): 
-                    rowName.value = f'Unit Mass ({unitTypeMass[str(jobNum)]})'
+                if(str(jobNum) in unitMassType): 
+                    rowName.value = f'Unit Mass ({unitMassType[str(jobNum)]})'
                 else: 
                     rowName.value = 'Unit Mass (unit/mass)' 
                 
@@ -828,6 +807,7 @@ def insertSampleValues(ws, pageLocation, sectionJobs, currentSection, sampleData
                     
                     if(testVal == 0.0): 
                         valueColumn.value = 'ND'
+                        valueMultColumn.value = 'ND'
                     else: 
                         processValues(testVal, unitType, valueColumn, valueMultColumn, unitMass)
                     
@@ -987,6 +967,7 @@ def insertSampleValues2(ws, pageLocation, sectionJobs, currentSection, sampleDat
                     
                     if(testVal == 0.0): 
                         valueColumn.value = 'ND'
+                        valueMultColumn.value = 'ND'
                     else: 
                         processValues(testVal, unitType, valueColumn, valueMultColumn, unitMass)
                     

@@ -1,4 +1,3 @@
-
 import pickle 
 import os 
 import math; 
@@ -253,7 +252,23 @@ def generatePestReport(jobNumbers, clientInfo, sampleNames, sampleInfo, sampleDa
         
         #TODO: both     
         if(report == bothReports): 
-            pass; 
+            for key, value in sampleTypes[jobNum].items(): 
+                print('KEY: ', key, ' value: ', value); 
+                if(key == 'single'): 
+                    #createPestReport(jobNum, pestPaths[jobNum]['multi'], clientInfo[jobNum],)
+                    print('Single Pest Reports: ', value)
+                    for singleReport in value: 
+                        singlePath = pestPaths[jobNum]['single'][singleReport]
+                        temp = [singleReport]
+                        print('TEMP: ', temp); 
+                        createPestReport(jobNum, singlePath, clientInfo[jobNum], temp, sampleNames[jobNum], sampleData, recoveryValues, unitType[jobNum])
+                        createToxinReport(jobNum, singlePath, clientInfo[jobNum], singleReport, sampleNames[jobNum], sampleData, recoveryValues, unitType[jobNum])
+                    
+                else: 
+                    if(len(value) != 0): 
+                        print('Multiple Pest Reports: ', value) 
+                        createPestReport(jobNum, pestPaths[jobNum]['multi'], clientInfo[jobNum], value, sampleNames[jobNum], sampleData, recoveryValues, unitType[jobNum])
+                        createToxinReport(jobNum, toxicPaths[jobNum]['multi'], clientInfo[jobNum], value, sampleNames[jobNum], sampleData, recoveryValues, unitType[jobNum])
             
         if(report == pesticidesReport): 
             #createPestReport(jobNum, clientInfo[jobNum], sampleData, recoveryValues) 
@@ -696,16 +711,18 @@ def insertToxicTable(ws, pageLocation, recoveryValues, sampleData, sectionJobs, 
 
 
 def formatPestRows(ws, pageSize, totalPages): 
+    totalRows = (pageSize * totalPages) - (8 * (totalPages-1)) 
+    window_conversion = 0.75 
+    row_height_pixels = 18 
     
     print('Total Pages: ', totalPages)
-
-    totalRows = (pageSize * totalPages) - (8 * (totalPages-1)) 
     print('Total Rows: ', totalRows)
 
     for row in ws.iter_rows(min_row=1, max_row=totalRows, min_col=1, max_col=9): 
         #print(row)
         for cell in row:
             cell.font = defaultFont 
+            ws.row_dimensions[cell.row].height = (row_height_pixels * window_conversion)
             
 #0 = BUD 
 #1 = OIL

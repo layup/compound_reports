@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
         for key, value in self.sampleNames.items():
             print(key, value)
         
-        horizontalHeaders = ['Sample Number', 'Units', 'Baisc/Deluxe', 'Single/Multi', 'De/Un/Mo', 'Unit Value','Sample Name']; 
+        horizontalHeaders = ['Sample Number', 'Units', 'Baisc/Deluxe', 'Single/Multi', 'Density/Moisture/Unit Mass Value', 'Unit Mass Standard Unit','Sample Name']; 
         unitItems = ['mg/g & Percent (Moisture)', 'mg/mL & Percent (Density)', 'mg/unit & mg/g (Unit Mass)', 'Percent Only' ]
         reportType = ['Basic Report', 'Deluxe Report']
         batch = ['Multi', 'Single']

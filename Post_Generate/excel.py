@@ -1,5 +1,3 @@
-
-
 import pickle 
 import os 
 import math; 
@@ -12,9 +10,7 @@ from openpyxl.worksheet.page import PageMargins
 from openpyxl.drawing.image import Image
 from openpyxl.utils import get_column_letter
 
-
 from Modules.utilities import * 
-
 
 #Fonts
 defaultFont = Font(name="Times New Roman", size=9)
@@ -89,20 +85,18 @@ def pageSetup(ws):
 
 def formatRows(ws, pageSize, totalPages, maxCol): 
     
-    print('Total Pages: ', totalPages)
-
     totalRows = (pageSize * totalPages) - (8 * (totalPages-1)) 
-    print('Total Rows: ', totalRows)
+    window_conversion = 0.75 
+    row_height_pixels = 18 
     
-    row_height_pixels = 15
+    print('Total Pages: ', totalPages)
+    print('Total Rows: ', totalRows)
 
     for row in ws.iter_rows(min_row=1, max_row=totalRows, min_col=1, max_col=maxCol): 
-        #print(row)
         for cell in row:
             cell.font = defaultFont 
-            ws.row_dimensions[cell.row].height =row_height_pixels 
+            ws.row_dimensions[cell.row].height = (row_height_pixels * window_conversion)
     
-            
 
 def createFooters(ws, title, jobNumber): 
     
@@ -174,12 +168,12 @@ def insertNextSectionComment(ws, pageLocation):
 
 def insertSignature(ws, pageLocation, startColumn): 
     names = [
-        'R. Biloduea', 
+        'R. Bilodeau', 
         'H. Hartmann'
     ]
     postions = [
-        'Analytical Chemist:',
-        'Sr Analytical Chemist:'
+        'Analytical Chemist',
+        'Sr Analytical Chemist'
     ]
     
     for i, col in enumerate(startColumn): 
