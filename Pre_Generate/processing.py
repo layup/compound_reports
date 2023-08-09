@@ -195,12 +195,12 @@ def processClientInfo(jobNum, fileLocation):
                     #not could be apart of the string name longer 
                     
                     #add to most recent sample
-                    if(currentTestsCheck):
-                        #print('current is a test: ', currentTestsCheck.group())
-                        if(prevSampleTestsCheck):
-                            sampleTests[prevSampleName] = sampleTests[prevSampleName]  + ", " + currentTestsCheck.group()
-                        else: 
-                            sampleTests[prevSampleName] = currentTestsCheck.group()
+                    if currentTestsCheck:
+                        print('current is a test:', currentTestsCheck.group())
+                        if prevSampleTestsCheck:
+                            sampleTests[prevSampleName] = sampleTests.get(prevSampleName, '') + ", " + currentTestsCheck.group()
+                        else:
+                            sampleTests[prevSampleName] = sampleTests.get(prevSampleName, '') + currentTestsCheck.group()
                         
                     #Prev sample name 
                     if(prevSampleMatchCheck):
