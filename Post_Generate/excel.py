@@ -94,18 +94,13 @@ def formatRows(ws, pageSize, totalPages, maxCol):
     totalRows = (pageSize * totalPages) - (8 * (totalPages-1)) 
     print('Total Rows: ', totalRows)
     
-    pixels_to_points = 0.75  # Approximately 1 point = 0.75 pixels
     row_height_pixels = 15
-    row_height_points = row_height_pixels / pixels_to_points
-
-
 
     for row in ws.iter_rows(min_row=1, max_row=totalRows, min_col=1, max_col=maxCol): 
         #print(row)
         for cell in row:
             cell.font = defaultFont 
             ws.row_dimensions[cell.row].height =row_height_pixels 
-        
     
             
 
