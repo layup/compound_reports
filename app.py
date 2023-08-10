@@ -200,9 +200,12 @@ class MainWindow(QMainWindow):
         
         self.ui.tableWidget.setColumnCount(len(horizontalHeaders))
         self.ui.tableWidget.setHorizontalHeaderLabels(horizontalHeaders)
-        
+       
+    
+        sampleDataKeys = sampleData.keys()  # Get a view of the keys
+        sampleDataKeys = list(sampleDataKeys)   
  
-        for key, value in sampleData.items(): 
+        for key in sorted(sampleDataKeys): 
             row = self.ui.tableWidget.rowCount()
             self.ui.tableWidget.insertRow(row)
             
@@ -356,8 +359,7 @@ class MainWindow(QMainWindow):
         self.ui.clientTable.setHorizontalHeaderLabels([])
         
 
-    #update client information     
-    @pyqtSlot() 
+
     def on_clientTable_cellChanged(self, row, col ):
         
         clientInfoArr = [
