@@ -139,11 +139,11 @@ def reportPaths(jobNumbers, sampleTypes, excelFileName):
     pestPaths = {}
     toxicPaths = {}
     
-    textFileName = 'source.txt'
-    textContent = f'Source File {excelFileName}' 
+    textContent = f'Source File: {excelFileName}' 
 
     for jobNum, value in sampleTypes.items(): 
         
+        textFileName = f'{jobNum}_source.txt'
         folderPath = os.path.join(path, jobNum)
         
         if not os.path.exists(folderPath):
@@ -342,10 +342,11 @@ def createPestReport(jobNum, outputPath, clientInfo, samples, sampleNames, sampl
     totalSamples = len(samples)
     totalSections = math.ceil(totalSamples/4)
     totalPages = totalSections * 3 
+    maxCols = 9 
     
     print('Total Samples: ', totalSamples, 'Total Sections: ', totalSections)
 
-    formatPestRows(ws, pageSize, totalPages)
+    formatRows(ws, pageSize, totalPages, maxCols)
 
     sectionJobs = []; 
     currentSection = 0; 
@@ -449,10 +450,11 @@ def createToxinReport(jobNum, outputPath, clientInfo, samples, sampleNames, samp
     totalSamples = len(samples)
     totalSections = math.ceil(totalSamples/4)
     totalPages = totalSections * 3 
+    maxCols = 9; 
     
     print('Total Samples: ', totalSamples, 'Total Sections: ', totalSections)
 
-    formatPestRows(ws, pageSize, totalPages)
+    formatRows(ws, pageSize, totalPages, maxCols)
 
     sectionJobs = []; 
     currentSection = 0; 
@@ -509,8 +511,6 @@ def createToxinReport(jobNum, outputPath, clientInfo, samples, sampleNames, samp
                 pageLocation = ((currentPage-1) * pageSize) - (8 * (currentPage-2)) + 1; 
                 
     wb.save(outputPath)
-
-
 
 
 def insertTableHeader(ws, pageLocation, sectionJobs, currentSection, start, unitType): 
@@ -710,20 +710,6 @@ def insertToxicTable(ws, pageLocation, recoveryValues, sampleData, sectionJobs, 
     return pageLocation; 
 
 
-def formatPestRows(ws, pageSize, totalPages): 
-    totalRows = (pageSize * totalPages) - (8 * (totalPages-1)) 
-    window_conversion = 0.75 
-    row_height_pixels = 18 
-    
-    print('Total Pages: ', totalPages)
-    print('Total Rows: ', totalRows)
-
-    for row in ws.iter_rows(min_row=1, max_row=totalRows, min_col=1, max_col=9): 
-        #print(row)
-        for cell in row:
-            cell.font = defaultFont 
-            ws.row_dimensions[cell.row].height = (row_height_pixels * window_conversion)
-            
 #0 = BUD 
 #1 = OIL
 #2 = Paper

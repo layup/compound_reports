@@ -46,7 +46,6 @@ class MainWindow(QMainWindow):
     def on_pages_currentChanged(self, index): 
         if(index == 0): 
             self.ui.headerLabel.setText("Create Report") 
-           
         if(index == 1): 
             self.clearReportPage(); 
             self.ui.generateReportBtn.setVisible(True)
@@ -54,10 +53,6 @@ class MainWindow(QMainWindow):
             
             selected_report = self.ui.reportSelector.currentText() 
             self.ui.headerLabel.setText(selected_report + ' Report') 
- 
-            
-            
-            
         else: 
             self.ui.generateReportBtn.setVisible(False)
             self.ui.reportsInfo.hide()
@@ -67,7 +62,6 @@ class MainWindow(QMainWindow):
     
     #Create Report Page 
     def defineReportType(self): 
-        
         self.ui.reportSelector.clear()
         self.ui.reportSelector.addItems(REPORT_TYPES)
         
@@ -83,30 +77,25 @@ class MainWindow(QMainWindow):
     
     @pyqtSlot()
     def on_proceedBtn_clicked(self): 
-        
-        #TODO: check if is .xslx file
-        errorChecks = [0,0]
+        errorChecks = [0,0,0]
         
         reportType = self.ui.reportSelector.currentText()
         fileLocation = self.ui.fileLocationLabel.text()
-        
-        if(reportType != ''): 
-            errorChecks[0] = 0
-        else: 
-            errorChecks[0] = 1; 
-            
-        if(fileLocation != ''): 
-            errorChecks[1] = 0 
-        else: 
-            errorChecks[1] = 1; 
+                
+        errorChecks[0] = 0 if reportType != '' else 1
+        errorChecks[1] = 0 if fileLocation != '' else 1 
+        errorChecks[2] = 0 if fileExtenCheck(fileLocation) else 1
         
         if(sum(errorChecks) == 0): 
             self.ui.pages.setCurrentIndex(1);
             self.resetCreateReportPage()
             self.reportPage(reportType, fileLocation)
         else: 
-            #TODO: error box 
-            print("Please Try Again")
+            errorMsg = ''
+            errorMsg += 'Please select a Report Type\n' if errorChecks[0] == 1 else ''
+            errorMsg += 'Please select a File\n' if errorChecks[1] == 1 else ''
+            errorMsg += 'Please select a valid File Type\n' if errorChecks[2] == 1 else ''
+            self.showErrorDialog('Cannot Proceed', errorMsg)
         
     def resetCreateReportPage(self): 
         self.ui.fileLocationLabel.setText('')
@@ -134,15 +123,12 @@ class MainWindow(QMainWindow):
             self.preparePestReport(fileLocation) 
 
     
-    
     def prepareThcReport(self, fileLocaiton): 
         print('Prepare THC Report')
-        self.jobNums, self.recovery, sampleData2, self.sampleData = scanTHC(fileLocaiton)
-        #print('Recovery:', self.recovery)
-        
+        self.jobNums, self.recovery, self.sampleData = scanTHC(fileLocaiton)        
         self.populateClientInfo(self.jobNums);
         self.thcSampleSet(self.sampleData); 
-    
+        
     
     def preparePestReport(self, fileLocation): 
         print('Prepare Pestcides/Toxins Report')
@@ -152,10 +138,6 @@ class MainWindow(QMainWindow):
         self.populateClientInfo(self.jobNums)
         self.pesticidesSampleSet(self.sampleNumbers)
 
-    
-    
-    #TODO: when the client is None, define all the values as being blank 
-    #TODO: redo the processing information
     def populateClientInfo(self, jobNums): 
         print('**Job Numbers')
         print(jobNums)
@@ -171,7 +153,6 @@ class MainWindow(QMainWindow):
         
         for key, value in jobsInfoLocation.items(): 
             print(key, value)
-            
             
             temp, sampelNames = processClientInfo(key, value)
             self.sampleNames[key] = sampelNames
@@ -208,7 +189,6 @@ class MainWindow(QMainWindow):
             print(key, value)
          
     def thcSampleSet(self, sampleData): 
-   
         print('**Sample Names')
         for key, value in self.sampleNames.items():
             print(key, value)
@@ -221,12 +201,14 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setColumnCount(len(horizontalHeaders))
         self.ui.tableWidget.setHorizontalHeaderLabels(horizontalHeaders)
         
+ 
         for key, value in sampleData.items(): 
             row = self.ui.tableWidget.rowCount()
             self.ui.tableWidget.insertRow(row)
             
-            item = QTableWidgetItem(str(key))
-            self.ui.tableWidget.setItem(row, 0, item)
+            sampleNum = QTableWidgetItem(str(key))
+            sampleNum.setTextAlignment(Qt.AlignCenter);
+            self.ui.tableWidget.setItem(row, 0, sampleNum)
             self.addComboBox(row, 1, unitItems)
             self.addComboBox(row, 2, reportType)
             self.addComboBox(row, 3, batch)
@@ -234,28 +216,24 @@ class MainWindow(QMainWindow):
             try: 
                 sampleName = self.sampleNames[key[:6]][key]
                 sampleName  = re.sub(r"\s+", " ", sampleName.strip())
-                item2 = QTableWidgetItem(sampleName)
-                self.ui.tableWidget.setItem(row, 6, item2)
+                sampleNameItem = QTableWidgetItem(sampleName)
+                #sampleNameItem.setTextAlignment(Qt.AlignCenter)
+                self.ui.tableWidget.setItem(row, 6, sampleNameItem)
                 
             except: 
                 print('Error getting sample names') 
             
-        
         self.ui.tableWidget.resizeColumnsToContents()  
         self.ui.tableWidget.setColumnWidth(0, 150)
         self.ui.tableWidget.setColumnWidth(1, 200)
 
         for i in range(3): 
-            self.ui.tableWidget.setColumnWidth(3+i, 150) 
+            self.ui.tableWidget.setColumnWidth(3+i, 200) 
             
         self.ui.tableWidget.setColumnWidth(4, 250); 
         
         
-    def pesticidesSampleSet(self, sampleNumbers): 
-        #TODO: can process the type as well from the file 
-        #TODO: resize the sample Names Section 
-        #TODO: are sample names getting changed and relabled when we edit them? 
-        
+    def pesticidesSampleSet(self, sampleNumbers):         
         horizontalHeaders = ['Sample Number', 'Type', 'Toxins', 'Single/Multi', 'Sample Name']
         pestType = ['Bud', 'Oil', 'Paper'] 
         toxinType = ['Pesticides', 'Toxins Only', 'Both']
@@ -268,8 +246,9 @@ class MainWindow(QMainWindow):
             row = self.ui.tableWidget.rowCount()
             self.ui.tableWidget.insertRow(row)
             
-            item = QTableWidgetItem(str(sampleNumber))
-            self.ui.tableWidget.setItem(row, 0, item)
+            sampleNumItem = QTableWidgetItem(str(sampleNumber))
+            sampleNumItem.setTextAlignment(Qt.AlignCenter);
+            self.ui.tableWidget.setItem(row, 0, sampleNumItem)
 
             self.addComboBox(row, 1, pestType)
             self.addComboBox(row, 2, toxinType)
@@ -278,13 +257,14 @@ class MainWindow(QMainWindow):
             try: 
                 sampleName = self.sampleNames[sampleNumber[:6]][sampleNumber] 
                 sampleName  = re.sub(r"\s+", " ", sampleName.strip())
-                
-                item2 = QTableWidgetItem(sampleName)
-                self.ui.tableWidget.setItem(row, 4, item2)
+                sampleNameItem = QTableWidgetItem(sampleName)
+                #sampleNameItem.setTextAlignment(Qt.AlignCenter)
+                self.ui.tableWidget.setItem(row, 4, sampleNameItem)
                 
             except: 
                 print('Error getting sample names')
             
+        
             #self.ui.tableWidget.resizeColumnsToContents()  
             defaultWidth = 150
             sampleNumberWidth = 100
@@ -310,12 +290,26 @@ class MainWindow(QMainWindow):
             #print('****Generating THC Report')
             textSections = [0,4,5,6]
             sampleInfo = self.getSampleInfo(textSections)
-            generateThcReport(self.jobNums, self.clientInfo, sampleInfo, self.sampleData, self.recovery, self.fileName)
+            try: 
+                generateThcReport(self.jobNums, self.clientInfo, sampleInfo, self.sampleData, self.recovery, self.fileName)
+            except Exception as e:
+                errorTitle = 'Could Not Generate THC Report'
+                errorMsg = 'An error has occured when generating the report'
+                detailedErrorMsg = str(e)
+                self.showErrorDialog(errorTitle, errorMsg, detailedErrorMsg) 
+                print("Caught an exception:", detailedErrorMsg)
         else: 
             #print('****Generating Potency and Toxins Report') 
             textSections = [0,4]
             sampleInfo = self.getSampleInfo(textSections)
-            generatePestReport(self.jobNums, self.clientInfo, self.sampleNames, sampleInfo, self.sampleData, self.recovery, self.fileName)
+            try: 
+                generatePestReport(self.jobNums, self.clientInfo, self.sampleNames, sampleInfo, self.sampleData, self.recovery, self.fileName)
+            except Exception as e:
+                errorTitle = 'Could Not Generate Pesticides Report'
+                errorMsg = 'An error has occured when generating the report'
+                detailedErrorMsg = str(e)
+                self.showErrorDialog(errorTitle, errorMsg, detailedErrorMsg) 
+                print("Caught an exception:", detailedErrorMsg)
             
                         
     #TODO: if sample name is blank just give it the sample number instead
@@ -361,11 +355,56 @@ class MainWindow(QMainWindow):
         self.ui.clientTable.setColumnCount(0)
         self.ui.clientTable.setHorizontalHeaderLabels([])
         
-    
-    def updateClientInfo(self): 
-        pass; 
-        
 
+    #update client information     
+    @pyqtSlot() 
+    def on_clientTable_cellChanged(self, row, col ):
+        
+        clientInfoArr = [
+            'clientName',
+            'date',
+            'time',
+            'attn',
+            'addy1',
+            'addy2',
+            'addy3',
+            'sampleType1',
+            'sampleType2',
+            'totalSamples',
+            'recvTemp',
+            'tel',
+            'email',
+            'fax',
+            'payment',
+        ] 
+        
+        selected_item = self.ui.clientTable.item(row, col)
+
+        if selected_item:
+            #row = self.ui.clientTable.row(selected_item)
+            #col = self.ui.clientTable.column(selected_item)
+            row_header_item = self.ui.clientTable.verticalHeaderItem(row)
+            col_header_item = self.ui.clientTable.horizontalHeaderItem(col)
+            print(f"Selected Item: {selected_item.text()}, Row: {row}, Column: {col}")
+            print(f"Row Header: {row_header_item.text()}, Column Header: {col_header_item.text()}")
+            
+            try: 
+                jobNum = col_header_item.text()
+                selectedClientInfo = clientInfoArr[row]
+                updatedText = selected_item.text()
+                self.clientInfo[jobNum][selectedClientInfo] = updatedText
+        
+                
+            except: 
+                print(f"Error: could not update {row_header_item.text()} for {col_header_item.text()}")
+             
+        print('UPDATED: Client Info')   
+        
+        for key, value in self.clientInfo.items(): 
+            print(key, value)
+        
+        
+        
     #Settings Page 
     @pyqtSlot() 
     def on_saveOutputBtn_clicked(self): 
@@ -394,15 +433,30 @@ class MainWindow(QMainWindow):
             print("No Stuff")
             
         else: 
-            
             print(locations)
             self.ui.reportOutputLabel.setText(locations['output'])
             self.ui.txtLocationLabel.setText(locations['txtLocation'])
         
     @pyqtSlot()
     def on_loqBtn_clicked(self): 
-        
        updateLOQ(); 
+       
+    def showErrorDialog(self, errorTitle, errorMsg, detailedErrorMsg=None):
+        
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+
+        msg.setText(errorTitle)
+        msg.setInformativeText(errorMsg)
+        
+        if(detailedErrorMsg): 
+            msg.setDetailedText(detailedErrorMsg)
+            
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        
+        retval = msg.exec_()
+        print("value of pressed message box button:", retval)
+
         
         
         

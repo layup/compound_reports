@@ -204,7 +204,7 @@ def processClientInfo(jobNum, fileLocation):
                         
                     #Prev sample name 
                     if(prevSampleMatchCheck):
-                        #print('prev was a sampleName')
+                        print('prev was a sampleName')
                         #print(sampleName[prevSampleName]) #doesnt work 
                         pass; 
                        
@@ -237,29 +237,40 @@ def processClientInfo(jobNum, fileLocation):
 
 
 def scanTHC(fileLocation): 
+    #TODO: if there is no 1/10 then use the 1/100 insted 
     
     wb = load_workbook(fileLocation) 
     ws = wb.active
 
-    sampleNames = [] 
+    sampleJobLocations = [] 
     sampleRows = []
+    
     jobNumbers = []
+    sampleNumbers = []
+    dilutedSamples = []
     
     sampleNamesPattern =  r"\d{6}-\d{1,2}$" 
-    #sampleNamesPattern = r"\d{6}-\d(?!\/\d+)"
+    sampleNamesPattern2 = r"\d{6}-\d(?!\/\d+)"
 
     #sample names and locations
     #TODO: something about 1/100 dillution 
     for cell in ws['AJ']:         
-        if re.match(sampleNamesPattern, str(cell.value)): 
-            #print('MATCH: ', str(cell.value))
-            sampleNames.append([str(cell.value), cell.row]) 
+        currentValue = str(cell.value)
+        if re.match(sampleNamesPattern2, currentValue): 
+            print('MATCH: ', currentValue)
+            sampleJobLocations.append([currentValue, cell.row]) 
             sampleRows.append(cell.row)
             
-            currentJob = str(cell.value)[:6]
+            currentJob = currentValue[:6]
             
             if(currentJob not in jobNumbers): 
                 jobNumbers.append(currentJob)
+               
+            if('1/100' not in currentValue and currentValue not in sampleNumbers): 
+                sampleNumbers.append(currentValue)
+            
+            if('1/100' in currentValue and currentValue not in dilutedSamples):
+                dilutedSamples.append(currentValue)
                 
                 
     recoveryRows = []
@@ -285,7 +296,7 @@ def scanTHC(fileLocation):
     sampleData = {}
     sampleData2 = {}
 
-    for sample in sampleNames: 
+    for sample in sampleJobLocations: 
  
         if(currentName == ''): 
             currentName = sample[0]
@@ -326,7 +337,30 @@ def scanTHC(fileLocation):
     
     wb.close()
             
-    return jobNumbers, recoveryValues, sampleData, sampleData2; 
+    print('**Sample Data')
+    for key, value in sampleData2.items(): 
+        print(key, value )
+        
+    newData = {}
+
+    for sampleName in dilutedSamples: 
+        newName = sampleName.replace(' 1/100', '')
+        
+        if(newName not in sampleNumbers): 
+            newData[newName] = sampleData2[sampleName]
+    
+    keys = newData.keys()  # Get a view of the keys
+    key_list = list(keys)
+    difference = set(sampleNumbers) - set(key_list)
+     
+    for sampleName in difference: 
+        newData[sampleName] = sampleData2[sampleName]
+        
+    print('**NEW SAMPLE DATA')
+    for key, value in newData.items(): 
+        print(key, value )
+        
+    return jobNumbers, recoveryValues, newData; 
         
         
 
@@ -505,7 +539,7 @@ def determineRecoveryValues(ws, column_data):
         recoveryData[testName] = ws.cell(row=testRow, column=recoveryColumn).value 
         
     return recoveryData
-        
+    
           
 def determineSampleNumbers(ws, headerRows):
 

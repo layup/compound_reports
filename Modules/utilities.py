@@ -8,6 +8,10 @@ from PyQt5.QtWidgets import (
 )
 
 
+ERROR_CODES = { 
+    0: 'test'
+}
+
 def openFile(): 
     try: 
         fileName, _ = QFileDialog.getOpenFileName(None, 'Open File', '',)
