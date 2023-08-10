@@ -268,9 +268,6 @@ def scanTHC(fileLocation):
                
             if('1/100' not in currentValue and currentValue not in sampleNumbers): 
                 sampleNumbers.append(currentValue)
-            
-            if('1/100' in currentValue and currentValue not in dilutedSamples):
-                dilutedSamples.append(currentValue)
                 
                 
     recoveryRows = []
@@ -342,30 +339,15 @@ def scanTHC(fileLocation):
         print(key, value )
         
     newData = {}
-
-    #for sampleName in dilutedSamples: 
-    #    newName = sampleName.replace(' 1/100', '')
-        
-        #if(newName not in sampleNumbers): 
-        #    newData[newName] = sampleData2[sampleName]
     
-    #keys = newData.keys()  # Get a view of the keys
-    #key_list = list(keys)
-    #difference = set(sampleNumbers) - set(key_list)
-     
-    #for sampleName in difference: 
-    #    newData[sampleName] = sampleData2[sampleName]
-        
     for sampleName in sampleNumbers: 
         
         dilutedSampleName = sampleName + ' 1/100'
-       
         combinedValues = {}
         
         if(dilutedSampleName in sampleData2): 
             print(f'Sample: {sampleName}, {dilutedSampleName}') 
             for key, value in sampleData2[sampleName].items():
-                
                 dilutedVal = sampleData2[dilutedSampleName][key]
                 
                 print(f'Key: {key}, Sample: {value}, Diluted Sample: {dilutedVal}') 
