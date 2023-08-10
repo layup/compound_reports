@@ -99,7 +99,6 @@
         <widget class="QLabel" name="sidebarTitle">
          <property name="font">
           <font>
-           <family>Helvetica</family>
            <pointsize>-1</pointsize>
            <weight>75</weight>
            <bold>true</bold>
@@ -141,19 +140,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="thcPageBtn">
+        <widget class="QPushButton" name="historyBtn">
          <property name="text">
-          <string>THC Page</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pesticidesPageBtn">
-         <property name="text">
-          <string>Pesticides Page </string>
+          <string>History</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -1037,6 +1026,18 @@ QTableWidget::item:selected {
             </spacer>
            </item>
           </layout>
+         </widget>
+         <widget class="QWidget" name="historyPage">
+          <widget class="QWidget" name="widget_4" native="true">
+           <property name="geometry">
+            <rect>
+             <x>210</x>
+             <y>130</y>
+             <width>531</width>
+             <height>421</height>
+            </rect>
+           </property>
+          </widget>
          </widget>
         </widget>
        </item>

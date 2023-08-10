@@ -103,10 +103,12 @@ def reportPaths(jobNums, samples, excelFileName):
 
     outputPaths = {}
     
-    textFileName = 'source.txt'
-    textContent = f'Source File {excelFileName}' 
+   
+    textContent = f'Source File: {excelFileName}' 
 
     for jobNum, value in samples.items(): 
+
+        textFileName = f'{jobNum}_source.txt'
         
         folderPath = os.path.join(path, jobNum)
         if not os.path.exists(folderPath):
