@@ -383,12 +383,10 @@ class MainWindow(QMainWindow):
         selected_item = self.ui.clientTable.item(row, col)
 
         if selected_item:
-            #row = self.ui.clientTable.row(selected_item)
-            #col = self.ui.clientTable.column(selected_item)
             row_header_item = self.ui.clientTable.verticalHeaderItem(row)
             col_header_item = self.ui.clientTable.horizontalHeaderItem(col)
-            print(f"Selected Item: {selected_item.text()}, Row: {row}, Column: {col}")
-            print(f"Row Header: {row_header_item.text()}, Column Header: {col_header_item.text()}")
+            #print(f"Selected Item: {selected_item.text()}, Row: {row}, Column: {col}")
+            #print(f"Row Header: {row_header_item.text()}, Column Header: {col_header_item.text()}")
             
             try: 
                 jobNum = col_header_item.text()
@@ -400,10 +398,10 @@ class MainWindow(QMainWindow):
             except: 
                 print(f"Error: could not update {row_header_item.text()} for {col_header_item.text()}")
              
-        print('UPDATED: Client Info')   
+        #print('UPDATED: Client Info')   
         
-        for key, value in self.clientInfo.items(): 
-            print(key, value)
+        #for key, value in self.clientInfo.items(): 
+        #    print(key, value)
         
         
         
