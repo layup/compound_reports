@@ -96,13 +96,13 @@ unitTypePercentage = 3;
 basicReport = 0 
 deluxeReport = 1; 
 
-def reportPaths(jobNums, samples, excelFileName):
-   
+BOLD_FONT = Font(name="Times New Roman", size=11, bold=True)  
+
+def reportPaths(jobNums, samples, excelFileName): 
     results = loadLocations(); 
     path = results['output'];  
 
     outputPaths = {}
-    
    
     textContent = f'Source File: {excelFileName}' 
 
@@ -120,15 +120,11 @@ def reportPaths(jobNums, samples, excelFileName):
             except: 
                 pass; 
 
-            
-
         multiFileName = 'W' + str(jobNum) + "_thc.xlsx"
         multiFilePath =  os.path.join(folderPath, multiFileName)
-            
         singlePath = {}
         
         for pathType, value2 in value.items(): 
-
             if(pathType == 'single'):
                 for item in value2: 
                     singleFileName = 'W' + str(item) + "_thc.xlsx"
@@ -251,6 +247,7 @@ def generateThcReport(jobNums, clientInfo, sampleInfo, sampleData, recoveryValue
         print('Mult/Single: ', report)
         print('report type:', reportType[jobNum])
         print('Unit Type: ', unitType[jobNum]) 
+        print('Recovert Vals: ', recoveryValues)
         
         for currentReportType, samples in report.items(): 
             print('Report: ', currentReportType, '| Samples: ', samples )
@@ -388,6 +385,7 @@ def generateDexluxeReport(jobNum, outputPath, clientInfo, samples, sampleNames, 
     print(unitValue)
     print('*Unit Mass Type')
     print(unitMassType) 
+    print('*Recovery')
     
     wb = Workbook()
     ws = wb.active 
@@ -460,7 +458,7 @@ def generateDexluxeReport(jobNum, outputPath, clientInfo, samples, sampleNames, 
             pageLocation = ((currentPage-1) * pageSize) - (8 * (currentPage-2)) + 1;  
      
     
-    
+    #format the given rows   
     wb.save(outputPath); 
 
 def insertExtraRowValues(ws, jobNum, pageLocation, sectionJobs, currentSection, showExtraRow, unitType, unitValue, unitMassType): 
@@ -476,7 +474,7 @@ def insertExtraRowValues(ws, jobNum, pageLocation, sectionJobs, currentSection, 
                 rowName = ws.cell(row=pageLocation, column=1)
                 rowName.alignment = Alignment(horizontal='left', indent=1) 
                 rowName.value = unitNameOptions[unitType]
-                rowName.font = Font(name="Times New Roman", size=9, bold=True) 
+                rowName.font = BOLD_FONT
                 
                 for index, sample in enumerate(sectionJobs[currentSection]): 
                     if(index == 0): 
@@ -486,7 +484,7 @@ def insertExtraRowValues(ws, jobNum, pageLocation, sectionJobs, currentSection, 
 
                     currentSampleRow = ws.cell(row=pageLocation, column=currentColumn)
                     currentSampleRow.alignment = Alignment(horizontal='left', indent=1)  
-                    currentSampleRow.font = Font(name="Times New Roman", size=9, bold=True) 
+                    currentSampleRow.font = BOLD_FONT
                     
                     try: 
                         print('UnitValue: ', unitValue[sample])
@@ -499,7 +497,7 @@ def insertExtraRowValues(ws, jobNum, pageLocation, sectionJobs, currentSection, 
             if(unitType == 2): 
                 rowName = ws.cell(row=pageLocation, column=1)
                 rowName.alignment = Alignment(horizontal='left', indent=1) 
-                rowName.font = Font(name="Times New Roman", size=9, bold=True) 
+                rowName.font = BOLD_FONT
 
                 if(str(jobNum) in unitMassType): 
                     rowName.value = f'Unit Mass ({unitMassType[str(jobNum)]})'
@@ -514,7 +512,7 @@ def insertExtraRowValues(ws, jobNum, pageLocation, sectionJobs, currentSection, 
 
                     currentSampleRow = ws.cell(row=pageLocation, column=currentColumn)
                     currentSampleRow.alignment = Alignment(horizontal='left', indent=1)  
-                    currentSampleRow.font = Font(name="Times New Roman", size=9, bold=True) 
+                    currentSampleRow.font = BOLD_FONT
                     
                     try: 
                         result = formatLeadingValues(float(unitValue[sample]))
@@ -600,7 +598,7 @@ def insertBasicTable(ws, pageLocation, recoveryValues, showExtraRow ):
         testNameColumn.border = Border(right=thinBorder)
         
         if("*" in headerName): 
-            testNameColumn.font = Font(name="Times New Roman", size=9, bold=True) 
+            testNameColumn.font = BOLD_FONT
 
         blankColumn = ws.cell(row=pageLocation + i , column=6)
         blankColumn.alignment = Alignment(indent=1)   
@@ -632,6 +630,7 @@ def insertBasicTable(ws, pageLocation, recoveryValues, showExtraRow ):
         recoveryColumn.alignment = Alignment(horizontal='left', indent=1)
 
         if(test in recoveryValues.keys()): 
+
     
             recoveryVal = float(recoveryValues[test])
             recoveryColumn.value = significantFiguresConvert(recoveryVal) 
@@ -661,7 +660,7 @@ def insertDeluxeTable(ws, pageLocation, recoveryValues, showExtraRow):
         testNameColumn.border = Border(right=thinBorder)
 
         if("*" in headerName): 
-            testNameColumn.font = Font(name="Times New Roman", size=9, bold=True) 
+            testNameColumn.font = BOLD_FONT
 
         blankColumn = ws.cell(row=pageLocation + i , column=6)
         blankColumn.alignment = Alignment(indent=1)   
@@ -688,19 +687,36 @@ def insertDeluxeTable(ws, pageLocation, recoveryValues, showExtraRow):
                 temp.border = combineBorder(temp, newBorder)
             
     print('**Recovery Values')
+
+    print(recoveryValues)
     for index, test in enumerate(dexlueTestsFormatting): 
         recoveryColumn = ws.cell(row=pageLocation + index, column=7)
         recoveryColumn.alignment = Alignment(horizontal='left', indent=1)
 
+        #print(recoveryValues);
+        print(f'[{index}]: {test}')
+
         if(test in recoveryValues.keys()): 
-    
-            recoveryVal = float(recoveryValues[test])
-            recoveryColumn.value = significantFiguresConvert(recoveryVal) 
-            
-            number_format = get_format_for_value(recoveryVal)
+
+            #print(f'Current [{test}]: {type(test)}')
+            #TODO: temp fix
+          
+            #print(f'1: {recoveryVal[test]}')
+            try: 
+                recoveryVal = float(recoveryValues[test])
+                recoveryColumn.value = significantFiguresConvert(recoveryVal) 
+
+                number_format = get_format_for_value(recoveryVal)
+            except: 
+                print('Error with getting the recovery val, set default to 0')
+                number_format = 0
             #recoveryColumn.number_format = number_format  
 
             print(f'Recovery [{test}]: {number_format}, {recoveryVal}')
+            print('--------------------------------------------')
+      
+        
+        
     
     #insert additonal column 
     #TODO: if unitType = 4 do not include this 
@@ -712,9 +728,7 @@ def insertDeluxeTable(ws, pageLocation, recoveryValues, showExtraRow):
             
             if(col in [1,3,5]): 
                 blankRow.border = Border(bottom=thinBorder, right=thinBorder) 
-
         
-    
             
 def insertSampleValues(ws, pageLocation, sectionJobs, currentSection, sampleData, unitType, unitValue=None ): 
     unitTypeOptions = [
@@ -747,8 +761,8 @@ def insertSampleValues(ws, pageLocation, sectionJobs, currentSection, sampleData
                 percentageColumn.border = combineBorder(percentageColumn, newBorder) 
 
                 if("*" in test): 
-                    valueColumn.font = Font(name="Times New Roman", size=9, bold=True) 
-                    percentageColumn.font =Font(name="Times New Roman", size=9, bold=True)  
+                    valueColumn.font = BOLD_FONT
+                    percentageColumn.font =BOLD_FONT
                 
                 if(test in currentSample.keys()): 
                     testVal = currentSample[test]
@@ -800,8 +814,8 @@ def insertSampleValues(ws, pageLocation, sectionJobs, currentSection, sampleData
                 valueMultColumn.border = combineBorder(valueMultColumn, newBorder) 
 
                 if("*" in test): 
-                    valueColumn.font = Font(name="Times New Roman", size=9, bold=True) 
-                    valueMultColumn.font =Font(name="Times New Roman", size=9, bold=True)  
+                    valueColumn.font = BOLD_FONT
+                    valueMultColumn.font =BOLD_FONT
 
                 if(test in currentSample.keys()): 
                     testVal = currentSample[test] 
@@ -844,7 +858,7 @@ def insertSampleValues(ws, pageLocation, sectionJobs, currentSection, sampleData
 
                 
                 if("*" in test): 
-                    valueColumn.font = Font(name="Times New Roman", size=9, bold=True) 
+                    valueColumn.font = BOLD_FONT
 
                 if(test in currentSample.keys()): 
                     testVal = currentSample[test]
@@ -907,8 +921,8 @@ def insertSampleValues2(ws, pageLocation, sectionJobs, currentSection, sampleDat
                 percentageColumn.border = combineBorder(percentageColumn, newBorder) 
 
                 if("*" in test): 
-                    valueColumn.font = Font(name="Times New Roman", size=9, bold=True) 
-                    percentageColumn.font =Font(name="Times New Roman", size=9, bold=True)  
+                    valueColumn.font = BOLD_FONT
+                    percentageColumn.font =BOLD_FONT
                 
                 if(test in currentSample.keys()): 
                     testVal = currentSample[test]
@@ -960,8 +974,8 @@ def insertSampleValues2(ws, pageLocation, sectionJobs, currentSection, sampleDat
                 valueMultColumn.border = combineBorder(valueMultColumn, newBorder) 
                 
                 if("*" in test): 
-                    valueColumn.font = Font(name="Times New Roman", size=9, bold=True) 
-                    valueMultColumn.font =Font(name="Times New Roman", size=9, bold=True)  
+                    valueColumn.font = BOLD_FONT
+                    valueMultColumn.font =BOLD_FONT
 
                 if(test in currentSample.keys()): 
                     testVal = currentSample[test] 
@@ -1004,7 +1018,7 @@ def insertSampleValues2(ws, pageLocation, sectionJobs, currentSection, sampleDat
                 
                 
                 if("*" in test): 
-                    valueColumn.font = Font(name="Times New Roman", size=9, bold=True) 
+                    valueColumn.font = BOLD_FONT
 
                 if(test in currentSample.keys()): 
                     testVal = currentSample[test]
@@ -1078,7 +1092,7 @@ def insertBasicTableHeader(ws, pageLocation, sectionJobs, currentSection, start,
     for currentItem in headerLocations: 
         headerNames = ws.cell(row=pageLocation, column=currentItem[0])
         headerNames.value = currentItem[1]
-        headerNames.font = Font(name="Times New Roman", size=9, bold=True)
+        headerNames.font = BOLD_FONT
         headerNames.alignment = Alignment(indent=1) 
         
         if(currentItem[0] >= 6): 
@@ -1111,7 +1125,7 @@ def insertBasicTableHeader(ws, pageLocation, sectionJobs, currentSection, start,
             for col in range(2): 
                 sampleSection = ws.cell(row=pageLocation, column=currentColumn + col)
                 sampleSection.value = f'Sample {currentSample}'
-                sampleSection.font = Font(name="Times New Roman", size=9, bold=True)
+                sampleSection.font = BOLD_FONT
                 sampleSection.alignment = Alignment(indent=1) 
                 sampleSection.border = Border(left=thinBorder, right=thinBorder)
 
@@ -1123,7 +1137,7 @@ def insertBasicTableHeader(ws, pageLocation, sectionJobs, currentSection, start,
             currentColumn = 2 + index; 
             sampleSection = ws.cell(row=pageLocation, column=currentColumn)
             sampleSection.value = f'Sample {currentSample}'
-            sampleSection.font = Font(name="Times New Roman", size=9, bold=True)
+            sampleSection.font = BOLD_FONT
             sampleSection.alignment = Alignment(indent=1) 
             sampleSection.border = Border(left=thinBorder, right=thinBorder)
 
@@ -1251,8 +1265,8 @@ def insertThcComment(ws, pageLocation):
             'ND = none detected. N/A = not applicable. THC = tetrahydrocannabinol.', 
             '*Total THC = ∆9-THC + (THCA x 0.877 ). **Total CBD = CBD + (CBDA x 0.877).', 
             '', 
-            'Material will be held for up to 3 weeks unless alternative arrangements have been made. Sample holding time may vary and is',  
-            'dependent on MBL license restrictions.'
+            'Material will be held for up to 3 weeks unless alternative arrangements have been made. Sample holding time may',  
+            'vary and is dependent on MBL license restrictions.'
         ] 
 
     for i, comment in enumerate(comments): 

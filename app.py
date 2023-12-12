@@ -24,13 +24,13 @@ class MainWindow(QMainWindow):
 
     def __init__(self): 
         super(MainWindow, self).__init__()
-        self.setWindowTitle("My App"); 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self) 
+        
         self.defineReportType()
-        self.ui.generateReportBtn.setVisible(False)
-        self.ui.pages.setCurrentIndex(0)
-        self.ui.reportsInfo.hide()
+        self.additonalSetup()
+        
+        self.setWindowTitle("Cannabis & Pesticides Report Generator"); 
         self.showMaximized()
  
     #Page Buttons 
@@ -41,6 +41,12 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def on_settingsBtn_clicked(self): 
         self.ui.pages.setCurrentIndex(2);
+        
+        
+    def additonalSetup(self): 
+        self.ui.generateReportBtn.setVisible(False)
+        self.ui.pages.setCurrentIndex(0)
+        self.ui.reportsInfo.hide() 
          
     #Page Stack  
     def on_pages_currentChanged(self, index): 
@@ -294,6 +300,7 @@ class MainWindow(QMainWindow):
             textSections = [0,4,5,6]
             sampleInfo = self.getSampleInfo(textSections)
             try: 
+                #TODO: could have just passed in self and get the rest of the info from there
                 generateThcReport(self.jobNums, self.clientInfo, sampleInfo, self.sampleData, self.recovery, self.fileName)
             except Exception as e:
                 errorTitle = 'Could Not Generate THC Report'
@@ -403,8 +410,7 @@ class MainWindow(QMainWindow):
         #for key, value in self.clientInfo.items(): 
         #    print(key, value)
         
-        
-        
+         
     #Settings Page 
     @pyqtSlot() 
     def on_saveOutputBtn_clicked(self): 

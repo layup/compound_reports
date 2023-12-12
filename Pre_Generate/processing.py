@@ -272,8 +272,10 @@ def scanTHC(fileLocation):
                 
     recoveryRows = []
     recoveryValues = {}
-    stdconc = 2 
 
+    #Recovery Values, based on the stdconc column
+    #TODO: save this value and update is somehow so i can acess it later 
+    stdconc = 50 
     for cell in ws['AL']: 
         if(cell.value == stdconc): 
             recoveryRows.append(cell.row)
@@ -546,7 +548,6 @@ def determineRecoveryValues(ws, column_data):
     
           
 def determineSampleNumbers(ws, headerRows):
-
     sampleNames = []
     sampleNamesData = []
     

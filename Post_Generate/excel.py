@@ -13,7 +13,7 @@ from openpyxl.utils import get_column_letter
 from Modules.utilities import * 
 
 #Fonts
-defaultFont = Font(name="Times New Roman", size=9)
+defaultFont = Font(name="Times New Roman", size=11)
 
 #Borders 
 thinBorder = Side(border_style="thin", color="000000")
@@ -38,6 +38,7 @@ def significantFiguresConvert(value):
     return value; 
     
 def get_format_for_value(value):
+    print('Current Value:', value)
     if value < 1.0:
         return three_decimal_format
     if 1.00 <= value <= 9.99:

@@ -728,11 +728,11 @@ def insertPestComment(ws, pageLocation):
         '*Analysis includes all 97 target compounds on the Health Canada Mandatory List Aug 2019', 
         '**Trace = presence & identity of compound verified, value below limit of quantification ', 
         '', 
-        "As per international standards, all observed values are reported even if they are below LOQ's. LOQ or MDL's are interpretative ", 
-        '& given as guidance only & do not affect reported results.', 
+        "As per international standards, all observed values are reported even if they are below LOQ's. LOQ or MDL's are", 
+        'interpretative & given as guidance only & do not affect reported results.', 
         '', 
-        'Method: Sample is solvent extracted, then cleaned using SPE (QuEChERS) methods. Multiresidue analysis is carried out using',  
-        'Procedure ref AOAC 2007.01; USP <561><565>, EU 2.0813. Methods fully validated. '
+        'Method: Sample is solvent extracted, then cleaned using SPE (QuEChERS) methods. Multiresidue analysis is carried out',  
+        'using Procedure ref AOAC 2007.01; USP <561><565>, EU 2.0813. Methods fully validated. '
     ] 
 
     for i, comment in enumerate(comments): 
@@ -749,8 +749,8 @@ def insertPestComment(ws, pageLocation):
 
 def insertToxicCommets(ws, pageLocation): 
     comments = [
-        'Method: Sample is solvent extracted, then cleaned using SPE (QuEChERS) methods. Multiresidue analysis is carried out using',
-        'UPLC-ESI-MS/MS/APCI & GC-MS: SPME. Detection of compounds meet or exceed HC requirements.', 
+        'Method: Sample is solvent extracted, then cleaned using SPE (QuEChERS) methods. Multiresidue analysis is carried out',
+        'using UPLC-ESI-MS/MS/APCI & GC-MS: SPME. Detection of compounds meet or exceed HC requirements.', 
         'Procedure ref AOAC 2007.01; USP <561><565>, EU 2.0813. methods fully validated.',
         '', 
         'LOQ = Limit of quantification', 

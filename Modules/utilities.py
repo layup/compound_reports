@@ -24,8 +24,38 @@ def getFileLocation():
     print(dlg)
     return dlg
 
-def saveLocation(data):
-    pass;  
+
+class LocalPreferences: 
+    def __init__(self, path='data.pkl'): 
+        self.path = path
+        self.load()
+    
+    def load(self):
+        try:
+            with open(self.path, 'rb') as file:
+                self.preferences = pickle.load(file)
+        except (FileNotFoundError, EOFError):
+            print('Error: could not load prefernces')
+            self.preferences = {}
+            
+    def values(self): 
+        return self.preferences
+    
+    def update(self,name, value): 
+        self.preferences[name] = value
+        self.save()
+        
+    def get(self, value): 
+        return self.preferences[value]
+    
+    def remove(self, value):
+        del self.preferences[value]
+        
+    def save(self): 
+        with open(self.path, 'wb') as file:
+            pickle.dump(self.preferences, file)
+
+def saveLocation(data): 
 
     fileName = 'data.pkl'
     #locations = loadLocations()
